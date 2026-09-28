@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Navigation Monitor</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fa;
+            color: #1f2937;
+        }
+        
+        .container {
+            max-width: 1250px;
+            margin: 0 auto;
+            padding: 40px 25px;
+        }
+        /* HEADER */
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            margin: 0 0 8px;
+            font-size: 30px;
+            font-weight: 600;
+        }
+        
+        .header p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 15px;
+        }
+        
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #ecfdf5;
+            color: #047857;
+            padding: 9px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+        }
+        /* STATISTICS */
+        
+        .statistics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 22px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+        
+        .stat-title {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .stat-value {
+            font-size: 27px;
+            font-weight: 600;
+        }
+        /* TABLE CARD */
+        
+        .table-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+        
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .table-title h2 {
+            margin: 0 0 5px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .table-title p {
+            margin: 0;
+            font-size: 13px;
+            color: #6b7280;
+        }
+        /* BUTTON */
+        
+        .refresh-button {
+            border: none;
+            background: #2563eb;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        
+        .refresh-button:hover {
+            background: #1d4ed8;
+        }
+        /* TABLE */
+        
+        .table-wrapper {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            text-align: left;
+            background: #f9fafb;
+            color: #6b7280;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 14px 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        td {
+            padding: 16px 20px;
+            font-size: 14px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        tr:hover {
+            background: #fafafa;
+        }
+        /* IP / MAC */
+        
+        .ip {
+            font-family: monospace;
+            color: #374151;
+        }
+        
+        .mac {
+            font-family: monospace;
+            color: #6b7280;
+            font-size: 13px;
+        }
+        /* URL */
+        
+        .url {
+            color: #2563eb;
+            text-decoration: none;
+            max-width: 400px;
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .url:hover {
+            text-decoration: underline;
+        }
+        /* EMPTY */
+        
+        .empty {
+            text-align: center;
+            padding: 45px;
+            color: #9ca3af;
+        }
+        /* FOOTER */
+        
+        .footer {
+            margin-top: 20px;
+            color: #9ca3af;
+            font-size: 13px;
+            text-align: center;
+        }
+        /* RESPONSIVE */
+        
+        @media (max-width: 800px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .statistics {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="container">
+
+
+        <!-- HEADER -->
+
+        <div class="header">
+
+            <div>
+
+                <h1>
+                    Données de navigation
+                </h1>
+
+                <p>
+                    Suivi des activités enregistrées par l'application
+                </p>
+
+            </div>
+
+
+            <div class="status">
+
+                <span class="status-dot"></span> Mise à jour en direct
+
+            </div>
+
+        </div>
+
+
+        <!-- STATISTICS -->
+
+        <div class="statistics">
+
+            <div class="stat-card">
+
+                <div class="stat-title">
+                    Total des navigations
+                </div>
+
+                <div class="stat-value" id="total">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-title">
+                    Adresses IP uniques
+                </div>
+
+                <div class="stat-value" id="unique-ip">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-title">
+                    Dernière activité
+                </div>
+
+                <div class="stat-value" id="last-update" style="font-size: 18px;">
+                    --
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- TABLE -->
+
+        <div class="table-card">
+
+
+            <div class="table-header">
+
+                <div class="table-title">
+
+                    <h2>
+                        Historique
+                    </h2>
+
+                    <p>
+                        Les dernières activités enregistrées
+                    </p>
+
+                </div>
+
+
+                <button class="refresh-button" onclick="getNavigationData()">
+                Actualiser
+            </button>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Adresse IP
+                            </th>
+
+                            <th>
+                                Adresse MAC
+                            </th>
+
+                            <th>
+                                URL
+                            </th>
+
+                            <th>
+                                Date et heure
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="navigation-data">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <div class="footer">
+
+            Actualisation automatique toutes les 2 secondes
+
+        </div>
+
+
+    </div>
+
+
+
+    <script>
+        const API_URL =
+            "http://localhost:8001/navigation-data";
+
+
+        async function getNavigationData() {
+
+            try {
+
+
+                const response =
+                    await fetch(API_URL);
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        `HTTP error: ${response.status}`
+                    );
+
+                }
+
+
+                const data =
+                    await response.json();
+
+
+                console.log(
+                    "Données reçues :",
+                    data
+                );
+
+
+                updateStatistics(data);
+
+                updateTable(data);
+
+
+            } catch (error) {
+
+                console.error(
+                    "Erreur :",
+                    error
+                );
+
+            }
+
+        }
+
+
+
+        function updateStatistics(data) {
+
+
+            /* TOTAL */
+
+            document.getElementById(
+                "total"
+            ).textContent = data.length;
+
+
+
+            /* IP UNIQUES */
+
+            const uniqueIPs =
+                new Set(
+                    data.map(
+                        item => item.ip_address
+                    )
+                );
+
+
+            document.getElementById(
+                    "unique-ip"
+                ).textContent =
+                uniqueIPs.size;
+
+
+
+            /* DERNIERE ACTIVITE */
+
+            if (data.length > 0) {
+
+                const last =
+                    data[data.length - 1];
+
+
+                const date =
+                    new Date(last.timestamp);
+
+
+                document.getElementById(
+                        "last-update"
+                    ).textContent =
+                    date.toLocaleString();
+
+            }
+
+        }
+
+
+
+        function updateTable(data) {
+
+
+            const table =
+                document.getElementById(
+                    "navigation-data"
+                );
+
+
+            table.innerHTML = "";
+
+
+
+            if (data.length === 0) {
+
+                table.innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="4"
+                        class="empty"
+                    >
+
+                        Aucune donnée
+                        de navigation disponible.
+
+                    </td>
+
+                </tr>
+
+            `;
+
+                return;
+
+            }
+
+
+
+            /*
+             * Les données les plus récentes
+             * apparaissent en premier.
+             */
+
+            const sortedData = [...data].reverse();
+
+
+
+            sortedData.forEach(item => {
+
+
+                const row =
+                    document.createElement("tr");
+
+
+                const date =
+                    new Date(item.timestamp);
+
+
+
+                row.innerHTML = `
+
+                <td>
+
+                    <span class="ip">
+                        ${item.ip_address}
+                    </span>
+
+                </td>
+
+
+                <td>
+
+                    <span class="mac">
+                        ${item.mac_address}
+                    </span>
+
+                </td>
+
+
+                <td>
+
+                    <a
+                        href="${item.url}"
+                        target="_blank"
+                        class="url"
+                    >
+                        ${item.url}
+                    </a>
+
+                </td>
+
+
+                <td>
+
+                    ${date.toLocaleString()}
+
+                </td>
+
+            `;
+
+
+                table.appendChild(row);
+
+            });
+
+        }
+
+
+
+        /*
+         * Première récupération
+         */
+
+        getNavigationData();
+
+
+
+        /*
+         * Temps réel :
+         * vérification toutes les 2 secondes
+         */
+
+        setInterval(
+            getNavigationData,
+            2000
+        );
+    </script>
+
+
+</body>
+
+</html>
