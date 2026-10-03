@@ -42,6 +42,8 @@ class Browser(QMainWindow):
         self.redius.clicked.connect(self.showMinimized)
         self.full.clicked.connect(self.toggle_maximize)
 
+        self.webview.urlChanged.connect(self.on_url_changed)
+
     # =========================
     # Chargement d'une URL
     # =========================
@@ -129,3 +131,16 @@ class Browser(QMainWindow):
             self.showNormal()
         else:
             self.showMaximized()
+
+    # =========================
+    # URL changée
+    # =========================
+
+    def on_url_changed(self, url):
+        url_text = url.toString()
+
+        if not url_text or url_text == 'about:blank':
+            return
+
+        self.urlbar.setText(url_text)
+        self.sendToServer(url_text)

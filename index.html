@@ -302,6 +302,18 @@
 
             </div>
 
+            <div class="stat-card">
+
+                <div class="stat-title">
+                    URL actuelle
+                </div>
+
+                <div class="stat-value" id="current-url" style="font-size: 15px; word-break: break-all;">
+                    --
+                </div>
+
+            </div>
+
         </div>
 
 
@@ -387,7 +399,6 @@
         const API_URL =
             "http://localhost:8001/navigation-data";
 
-
         async function getNavigationData() {
 
             try {
@@ -469,15 +480,23 @@
                 const last =
                     data[data.length - 1];
 
-
                 const date =
                     new Date(last.timestamp);
-
 
                 document.getElementById(
                         "last-update"
                     ).textContent =
                     date.toLocaleString();
+
+                const currentUrlEl =
+                    document.getElementById("current-url");
+                currentUrlEl.textContent = last.url || "--";
+                currentUrlEl.title = last.url || "";
+
+            } else {
+
+                document.getElementById("current-url").textContent = "--";
+                document.getElementById("current-url").title = "";
 
             }
 
